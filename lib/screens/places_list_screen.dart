@@ -17,24 +17,27 @@ class PlacesListScreen extends StatelessWidget {
                 icon: Icon(Icons.add))
           ],
         ),
-        body: Consumer<GreatPlaces>(
-          child: Center(
-            child: Text('Got No Places Yet,start adding some !'),
-          ),
-          builder: (context, greatplaces, ch) => greatplaces.items.length <= 0
-              ? ch!
-              : ListView.builder(
-                  itemBuilder: (ctx, i) => ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: FileImage(greatplaces.items[i].image),
+        body: FutureBuilder(
+          future: Provider.of<GreatPlaces>(context,listen: false).fetchAndSetPlaces(),
+          builder:(ctx,snapshot) =>snapshot.connectionState==ConnectionState.waiting? Center(child: CircularProgressIndicator(),): Consumer<GreatPlaces>(
+            child: Center(
+              child: Text('Got No Places Yet,start adding some !'),
+            ),
+            builder: (context, greatplaces, ch) => greatplaces.items.length <= 0
+                ? ch!
+                : ListView.builder(
+                    itemBuilder: (ctx, i) => ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: FileImage(greatplaces.items[i].image),
+                      ),
+                      title: Text(greatplaces.items[i].title),
+                      onTap: () {
+                        //go to details page
+                      },
                     ),
-                    title: Text(greatplaces.items[i].title),
-                    onTap: () {
-                      //go to details page
-                    },
+                    itemCount: greatplaces.items.length,
                   ),
-                  itemCount: greatplaces.items.length,
-                ),
+          ),
         ));
   }
 }
